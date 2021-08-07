@@ -7,6 +7,10 @@ import {
 } from "./actionTypes";
 import { setData } from "../../utils/localStorage";
 
+const API = axios.create({
+  baseURL: "https://educationgt.herokuapp.com",
+});
+
 export const signinReq = () => {
   return {
     type: SIGNIN_REQ,
@@ -36,13 +40,12 @@ export const signout = () => {
 //signin logic
 export const signin = (data) => (dispatch) => {
   dispatch(signinReq());
-  return axios
-    .post(`http://localhost:5000/users/signin`, data)
+  return API.post(`/student/login`, data)
     .then((res) => {
-      // console.log(res);
-      setData("mySchoolUser", res.data);
+      console.log(res);
+      setData("mySchoolUser", res.data.result);
       setData("mySchoolIsAuth", true);
-      dispatch(signinSuccess(res.data));
+      dispatch(signinSuccess(res.data.result));
     })
     .catch((err) => {
       //   console.log(err.response);

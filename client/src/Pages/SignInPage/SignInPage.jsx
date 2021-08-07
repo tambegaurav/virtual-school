@@ -51,7 +51,7 @@ const SigninPage = () => {
 
   const handleLogin = () => {
     const credentials = {
-      email,
+      username: email,
       password,
     };
 
