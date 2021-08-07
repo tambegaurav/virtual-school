@@ -6,8 +6,8 @@ import {
 } from "./actionTypes";
 import { loadData } from "../../utils/localStorage";
 
-let user = loadData("yourStoryUser");
-let isAuth = loadData("yourStoryUserIsAuth");
+let user = loadData("mySchoolUser");
+let isAuth = loadData("mySchoolIsAuth");
 
 const init = {
   user: user || null,
