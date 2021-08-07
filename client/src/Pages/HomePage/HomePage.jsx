@@ -1,28 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable default-case */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Student from "../../components/Student";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
+import OtherStudent from "../../components/OtherStudent";
 let flag = true;
 
 const HomePage = () => {
   const [x, setX] = useState("0px");
   const [y, setY] = useState("0px");
-  const [x2, setX2] = useState("0px");
-  const [y2, setY2] = useState("100px");
-  const [temp, setTemp] = useState(false);
-  const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [currentChat, setCurrentChat] = useState([]);
+
   const [students, setStudents] = useState({});
 
-  // const socket = io("ws://localhost:8000");
+  const [studentsArr, setStudentsArr] = useState([]);
 
+  const socket = io("ws://localhost:8000");
   const loggedInUser = useSelector((state) => state.auth.user);
 
   const moveStudent = (e) => {
     let circle = document.querySelector(".circle");
-    let rect = document.querySelector(".rect");
     let moveBy = 10;
 
     switch (e.key) {
@@ -43,113 +40,61 @@ const HomePage = () => {
         setY(circle.style.top);
         break;
     }
-
-    switch (e.key) {
-      case "a":
-        rect.style.left = parseInt(rect.style.left) - moveBy + "px";
-        setX2(rect.style.left);
-        break;
-      case "d":
-        rect.style.left = parseInt(rect.style.left) + moveBy + "px";
-        setX2(rect.style.left);
-        break;
-      case "w":
-        rect.style.top = parseInt(rect.style.top) - moveBy + "px";
-        setY2(rect.style.top);
-        break;
-      case "s":
-        rect.style.top = parseInt(rect.style.top) + moveBy + "px";
-        setY2(rect.style.top);
-        break;
-    }
-  };
-
-  const moveStudent2 = (e) => {
-    let rect = document.querySelector(".rect");
-    let moveBy = 10;
-
-    switch (e.key) {
-      case "a":
-        rect.style.left = parseInt(rect.style.left) - moveBy + "px";
-        setX2(rect.style.left);
-        break;
-      case "d":
-        rect.style.left = parseInt(rect.style.left) + moveBy + "px";
-        setX2(rect.style.left);
-        break;
-      case "w":
-        rect.style.top = parseInt(rect.style.top) - moveBy + "px";
-        setY2(rect.style.top);
-        break;
-      case "s":
-        rect.style.top = parseInt(rect.style.top) + moveBy + "px";
-        setY2(rect.style.top);
-        break;
-    }
   };
 
   useEffect(() => {
     console.log(x, y);
     let circle = document.querySelector(".circle");
-    let rect = document.querySelector(".rect");
 
     window.addEventListener("load", () => {
       circle.style.position = "absolute";
       circle.style.left = x;
       circle.style.top = y;
-      rect.style.position = "absolute";
-      rect.style.left = x2;
-      rect.style.top = y2;
     });
 
     window.addEventListener("keydown", moveStudent);
     console.log(x, y);
-    console.log(x2, y2);
 
-    // socket.emit("new coords", { x, y, username: loggedInUser.username });
-    // socket.on("new coords", (data) => {
-    //   // we tell the client to execute 'new message'
-    //   console.log(data);
-    //   let name = data.studentName;
-    //   setStudents({ ...students, [name]: data });
-    // });
-    // socket.off("new coords", (data) => {
-    //   console.log("Callback", data);
-    // });
+    if (flag) {
+      socket.emit("new coords", { x, y, username: loggedInUser.username });
+      flag = false;
+    }
+
+    const timer = setTimeout(() => {
+      flag = true;
+    }, 50);
 
     return () => {
       window.removeEventListener("keydown", moveStudent);
+      clearInterval(timer);
     };
-  }, [x, y, x2, y2]);
-
-  // useEffect(() => {
-  //   if (loggedInUser) {
-  //     socket.emit("add user", loggedInUser.username);
-  //   }
-  // }, [loggedInUser]);
-
-  const openOptions = () => {};
+  }, [x, y]);
 
   useEffect(() => {
-    let X = +x.split("p")[0];
-    let Y = +y.split("p")[0];
-    let X2 = +x2.split("p")[0];
-    let Y2 = +y2.split("p")[0];
-    let YDist = Y2 - Y;
-    let XDist = X2 - X;
+    socket.on("newLocation", (data) => {
+      console.log(data);
+      // let name = data.username;
 
-    let dist = Math.sqrt(XDist ** 2 + YDist ** 2);
-    console.log("dist", dist);
+      // let stud = students.map((el) => {
+      //   console.log(el);
+      //   return el.username === data.username ? el : null;
+      // });
 
-    if (dist <= 100) {
-      window.addEventListener("keydown", openOptions);
-    } else {
-      window.removeEventListener("keydown", openOptions);
+      // console.log(stud);
+
+      setStudents((prev) => ({ ...prev, [data.username]: data }));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (loggedInUser) {
+      socket.emit("add user", loggedInUser.username);
     }
-  }, [x, y, x2, y2]);
+  }, [loggedInUser]);
 
   useEffect(() => {
     console.log(students);
+    setStudentsArr(Object.values(students));
   }, [students]);
 
   return (
@@ -157,16 +102,13 @@ const HomePage = () => {
       <h1>Homepage</h1>
       <Student
         classN={"circle"}
-        name={"Vedansh Wani"}
+        name={loggedInUser.name}
         img={"https://avatars.githubusercontent.com/u/23113177?v=4"}
       />
-      <Student
-        classN={"rect"}
-        name={"Gaurav Tambe"}
-        img={
-          "https://media-exp1.licdn.com/dms/image/C4D03AQGzQ5Ubii-fnQ/profile-displayphoto-shrink_400_400/0/1620941765897?e=1633564800&v=beta&t=Yc_yefD6el1eMR-JmATT49KjWzHQmuT3YZxO_9s6ce0"
-        }
-      />
+      {JSON.stringify(studentsArr)}
+      {studentsArr?.map((el) => (
+        <OtherStudent x={el.x} y={el.y} username={el.username} />
+      ))}
     </div>
   );
 };

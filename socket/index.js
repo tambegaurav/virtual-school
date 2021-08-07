@@ -24,16 +24,15 @@ let numUsers = 0;
 
 io.on("connection", (socket) => {
   let addedUser = false;
-
   // when the client emits 'new message', this listens and executes
   socket.on("new coords", (data) => {
     // we tell the client to execute 'new message'
     console.log(data);
-    socket.broadcast.emit("new coords", {
+    socket.broadcast.emit("newLocation", {
       username: socket.username,
       x: data.x,
       y: data.y,
-      studentName: data.username,
+      username: data.username,
     });
   });
 
