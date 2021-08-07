@@ -7,7 +7,8 @@ const Circle = styled.div`
   height: 50px;
   width: 50px;
   border-radius: 50%;
-  background-color: green;
+  /* background-color: green; */
+  border: 2px solid green;
 `;
 
 const Student = (props) => {
@@ -15,9 +16,17 @@ const Student = (props) => {
 
   return (
     <>
-      <Circle data-tip data-for="student" className="circle"></Circle>
-      <ReactTooltip id="student" type="success" effect="float">
-        <span>{user.name}</span>
+      <Circle
+        data-tip
+        data-for={props.classN}
+        className={props.classN}
+        style={{
+          backgroundImage: `url(${props.img})`,
+          backgroundSize: "cover",
+        }}
+      ></Circle>
+      <ReactTooltip id={props.classN} type="success" effect="float">
+        <span>{props.name}</span>
       </ReactTooltip>
     </>
   );
