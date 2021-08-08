@@ -5,7 +5,7 @@ const path = require("path");
 const server = require("http").createServer(app);
 const io = require("socket.io")(8000, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
 const port = process.env.PORT || 8000;
@@ -33,6 +33,7 @@ io.on("connection", (socket) => {
       x: data.x,
       y: data.y,
       username: data.username,
+      img: data.img,
     });
   });
 

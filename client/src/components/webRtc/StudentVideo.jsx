@@ -35,7 +35,7 @@ export const StudentVideo = () => {
   const socket = useRef();
 
   useEffect(() => {
-    socket.current = io.connect("http://virtual-tool-video.herokuapp.com/");
+    socket.current = io.connect("ws://locahost:2222");
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {

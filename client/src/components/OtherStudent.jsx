@@ -9,12 +9,11 @@ const Circle = styled.div`
   border-radius: 50%;
   /* background-color: green; */
   border: 2px solid green;
-
   position: absolute;
 `;
 
 const OtherStudent = (props) => {
-  const { x, y, username } = props;
+  const { x, y, username, img } = props;
 
   return (
     <>
@@ -22,7 +21,7 @@ const OtherStudent = (props) => {
         data-tip
         data-for={username}
         style={{
-          backgroundImage: `url(https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png)`,
+          backgroundImage: `url(${img})`,
           backgroundSize: "cover",
           left: x,
           top: y,
