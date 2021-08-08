@@ -101,6 +101,15 @@ const HomePage = () => {
         break;
 
       case "e":
+        // router.patch("/join/:id", updateLecture);
+        axios
+          .patch(
+            "https://educationgt.herokuapp.com/lecture/join/" + lectures[0]._id,
+            {
+              student_id: loggedInUser.name,
+            }
+          )
+          .then((res) => console.log(res));
         window.open(lectures[0].zoom_link, "_blank");
         break;
     }
